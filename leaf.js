@@ -1,3 +1,7 @@
+var leafCount = 0
+  , itemCount = 0
+  , extensionMemory = []
+  ;
 
 function isInBounds (item, bounds) {
   if (item.x >= bounds.left && 
@@ -17,22 +21,52 @@ function shuffle (items, leaves) {
     leaves.forEach(function (subleaf) {
       if (isInBounds(subitem, subleaf.bounds)) {
         subleaf.addItem(subitem);
+        return false;
       }
     });
   });
 }
 
+// Not sure which performs better
+// function shuffle (items, leaves) {
+//   var subitem
+//     , subleaf
+//     , i = 0
+//     , l = items.length
+//     , j
+//     ;
+
+//   for (; i< l; i += 1) {
+//     subitem = items[i];
+//     j = 0;
+//     for (; j< 4; j += 1) {
+//       subleaf = leaves[j];
+//       if (isInBounds(subitem, subleaf.bounds)) {
+        
+//         subleaf.addItem(subitem);
+//         // return;
+//       }
+//     }
+//   }
+// }
+
 
 function place (item, leaves) {
-  leaves.forEach(function (subleaf) {
+  var i=0
+    , subleaf
+    ;
+
+  for (; i< 4; i += 1) {
+    subleaf = leaves[i];
     if (isInBounds(item, subleaf.bounds)) {
-      subleaf.addItem(item);
+      return subleaf.addItem(item);
     }
-  });
+  }
 }
 
 
 function split (leaf) {
+
   var midX = leaf.bounds.left + (leaf.bounds.right  - leaf.bounds.left) / 2;
   var midY = leaf.bounds.top +  (leaf.bounds.bottom - leaf.bounds.top)  / 2;
 
@@ -65,10 +99,10 @@ function split (leaf) {
   };
 
   leaf.leaves.push(
-    Leaf({bounds: subBoundsTopLeft    , depth: leaf.depth }),
-    Leaf({bounds: subBoundsTopRight   , depth: leaf.depth }),
-    Leaf({bounds: subBoundsBottomRight, depth: leaf.depth }),
-    Leaf({bounds: subBoundsBottomLeft , depth: leaf.depth })
+    Leaf({bounds: subBoundsTopLeft    , depth: leaf.depth, parent: leaf }),
+    Leaf({bounds: subBoundsTopRight   , depth: leaf.depth, parent: leaf }),
+    Leaf({bounds: subBoundsBottomRight, depth: leaf.depth, parent: leaf }),
+    Leaf({bounds: subBoundsBottomLeft , depth: leaf.depth, parent: leaf })
   );
 }
 
@@ -130,88 +164,40 @@ function isInvalidItem (item) {
 
 
 
-var count = 0
-  , maxItems = 4
-  , maxLeaves = 4
-  ;
 
-Leaf = function (props) {
+
+Leaf = function (props, extensions) {
 
   if (isInvalidLeaf(props)) {
     return undefined;
   }
 
-  count += 1;
+  leafCount += 1;
   
-  return {
+  var new_leaf = {
 
     bounds: props.bounds,
     depth: props.depth + 1 || 0,
     
-    uid: count,
+    uid: leafCount,
     leaves: [],
     items: [],
+    parent: props.parent || {root: true},
 
-    print: function () {
-      
-      function line (l) {
-        var str = '';
-        for (var i=0; i< l*3; i++) {
-          str+=' ';
-        }
-        return str+'-';
-      }
-
-      function vals () {
-        var str = '';
-        if (this.items.length > 0) {
-          this.items.forEach(function (subitem) {
-            str += subitem.val
-          });
-        }
-        return str;
-      }
-
-      console.log(line(this.depth) + '['+this.depth+':'+vals.call(this)+']');
-
-      this.leaves.forEach(function (subleaf) {
-        subleaf.print();
-      });
-    },
-    
     
     getItems: function () {
-
-      if (!this.items) {
-        return;
-      }
-
       if (this.items.length > 0) {
         return this.items;
       }
 
       if (this.leaves.length > 0) {
-        
-        var collect = []
-          , i=0
-          , subItems
-          ;
-        
-        for (; i < 4; i++) {
-          subItems = this.leaves[i].getItems();
-          
-          if (subItems && subItems.length > 0) {
-            
-            subItems.forEach(function (item) {
-              collect.push(item);
-            });
-
-          }
-        }
-
-        return collect;
+        return this.leaves[0].getItems()
+          .concat(this.leaves[1].getItems())
+          .concat(this.leaves[2].getItems())
+          .concat(this.leaves[3].getItems());
       }
 
+      return [];
     },
 
     getUnEmptyLeaves: function () {
@@ -221,10 +207,9 @@ Leaf = function (props) {
 
       if (this.leaves.length > 0) {
         return this.leaves[0].getUnEmptyLeaves()
-            .concat(this.leaves[1].getUnEmptyLeaves())
-            .concat(this.leaves[2].getUnEmptyLeaves())
-            .concat(this.leaves[3].getUnEmptyLeaves())
-          ;
+          .concat(this.leaves[1].getUnEmptyLeaves())
+          .concat(this.leaves[2].getUnEmptyLeaves())
+          .concat(this.leaves[3].getUnEmptyLeaves());
       }
 
       return [];
@@ -237,25 +222,70 @@ Leaf = function (props) {
       }
 
       if (this.leaves.length > 0) {
-        place(item, this.leaves);
-        return;
+        return place(item, this.leaves);
       }
 
       if (this.items.length < 4) {
-        item.leaf = this;
-        this.items.push(item);
-        return;
+        return Item(item, this);
       }
 
       if (this.items.length === 4) {
         split(this);
         shuffle(this.items, this.leaves);
         this.items = [];
-        place(item, this.leaves);
-        return;
+        return place(item, this.leaves);
       }
     },
+
+    collapse: function () {
+      
+      var subitems = this.getItems()
+        , l=subitems.length
+        , i=0
+        ;
+      
+      this.leaves = [];
+
+      for (; i< l; i++) {
+        this.addItem(subitems[i]);
+      }
+    },
+
+  }; // EO new_leaf
+
+  if (extensions) {
+    extensionMemory = extensionMemory.concat(extensions);
   }
+  
+  if (extensionMemory) {
+    extensionMemory.forEach(function (extension) {
+      new_leaf[extension.name] = extension.func;
+    });
+  }
+
+  return new_leaf;
+
 }
 
-module.exports = Leaf;
+
+
+function Item (item, leaf) {
+  itemCount += 1;
+  
+  item.uid = itemCount;
+  item.leaf = leaf;
+  item.index = leaf.items.push(item) - 1;
+  
+  item.remove = function () {
+    this.leaf.items.splice(this.index, 1);
+    this.leaf.parent.collapse();
+  }
+
+  return item;
+}
+
+
+
+if (module) {
+  module.exports = Leaf;
+}

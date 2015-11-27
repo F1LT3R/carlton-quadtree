@@ -1,144 +1,8 @@
-var tests = []
-  , current_test = null
-  , failures = 0
-  ;
+var test = require('./test.js');
 
-function expect (expect) {
-
-  var assert = {
-    expected: expect
-  };
-
-  current_test.asserts.push(assert);
-
-  return {
-
-    // Type check ===
-    toBe: function (actual) {
-      
-      assert.actual = actual;
-      assert.type = "toBe";
-      
-      if (expect === actual) {
-        return pass(assert);
-      }
-
-      if (expect !== actual) {
-        return fail(assert);
-      }
-    },
-
-    // Truthy check ==
-    toEqual: function (actual) {
-      
-      assert.actual = actual;
-      assert.type = "toEqual";
-      
-      if (expect == actual) {
-        return pass(assert);
-      }
-
-      if (expect != actual) {
-        return fail(assert);
-      }
-    },
-
-    toBeGreaterThan: function (actual) {
-      
-      assert.actual = actual;
-      assert.type = "toBeGreaterThan";
-      
-      if (expect > actual) {
-        return pass(assert);
-      }
-
-      if (expect <= actual) {
-        return fail(assert);
-      }
-    },
-
-
-  }
-}
-
-// hi
-// :) love you
-
-function pass () {
-  // console.log('.');
-  return true;
-}
-
-function fail (assert) {
-  failures += 1;
-  console.log('Fail: "'+current_test.desc+'",');
-  console.log('\tExpected: '+('('+(typeof assert.expected)+') "'+assert.expected)+'" ' +
-      assert.type+': '+('('+(typeof assert.actual)+') "'+assert.actual)+'"');
-  return false;
-}
-
-function failTimeout (elapsed) {
-  failures += 1;
-  console.log('Fail: "'+current_test.desc+'",');
-  console.log('\tTimeout expected: < '+current_test.timeout + ' ms, Actual: '+elapsed+' ms.');
-  return false;
-}
-
-function describe (should, callback, ms) {
-  tests.push({
-    desc: should,
-    spec: callback,
-    asserts: [],
-    timeout: ms
-  });
-}
-
-function runTests () {
-  var startTests = + new Date();
-
-  tests.forEach(function (test) {
-    current_test = test;
-
-    var start = + new Date();
-
-    (function (spec) {
-      spec();
-    }) (test.spec);
-
-    var now = + new Date()
-      , elapsed = now - start
-      ;
-    
-    if (test.timeout) {
-      if (elapsed > test.timeout) {
-        failTimeout(elapsed);
-      }
-    }
-  });
-
-  var endTests = + new Date()
-    , elapsed = endTests - startTests
-    ;
-
-  if (failures === 0) {
-    console.log('All Tests pass in ' +(elapsed/1000) + ' seconds.');
-  }
-
-}
-
-
-// describe('Tests should work', function () {
-//   expect(1).toBe(1);
-//   expect(2).toBe(2); 
-//   expect(3).toBe(3);
-//   expect(4).toBe(4); 
-// });
-
-// describe('Tests should fail', function () {
-//   expect('').toEqual(0);
-// });
-
-
+describe = test.describe;
+expect = test.expect;
+run = test.run;
 
 
 var props = {
@@ -527,7 +391,123 @@ describe('unEmptyLeaves.items length should match getItems.length', function () 
 
 
 
-runTests();
+describe('Adding items should return the item added', function () {
+
+  var leaf = Leaf(props);
+  
+  var item = leaf.addItem({ x: 0, y: 0, val: 'A' });
+  expect(item.val).toBe('A');
+  var item = leaf.addItem({ x: 1, y: 0, val: 'B' });
+  expect(item.val).toBe('B');
+  var item = leaf.addItem({ x: 1, y: 1, val: 'C' });
+  expect(item.val).toBe('C');
+  
+  var item = leaf.addItem({ x: 0, y: 1, val: 'D' });
+  expect(item.val).toBe('D');
+
+  var item = leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
+  expect(item.val).toBe('E');
+  
+  var item = leaf.addItem({ x: 0.126, y: 0.126, val: 'F' });
+  expect(item.val).toBe('F');
+  var item = leaf.addItem({ x: 0.127, y: 0.127, val: 'G' });
+  expect(item.val).toBe('G');
+
+  var item = leaf.addItem({ x: 0.1252, y: 0.1252, val: 'H' });
+  expect(item.val).toBe('H');
+  var item = leaf.addItem({ x: 0.1252, y: 0.1252, val: 'I' });
+  expect(item.val).toBe('I');
+  var item = leaf.addItem({ x: 0.1252, y: 0.1253, val: 'J' });
+  expect(item.val).toBe('J');
+
+  var item = leaf.addItem({ x: 0.12511, y: 0.12511, val: 'K' });
+  expect(item.val).toBe('K');
+  var item = leaf.addItem({ x: 0.12512, y: 0.12512, val: 'L' });
+  expect(item.val).toBe('L');
+  var item = leaf.addItem({ x: 0.12513, y: 0.12513, val: 'M' });
+  expect(item.val).toBe('M');
+
+});
+
+
+describe('Should have correct number of leaves after removing item', function () {
+
+  var leaf = Leaf(props);
+
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
+  leaf.addItem({ x: 1, y: 0, val: 'B' });
+  leaf.addItem({ x: 1, y: 1, val: 'C' });
+  leaf.addItem({ x: 0, y: 1, val: 'D' });
+
+  // Adding this item causes a split resulting in 4 unempty leaves
+  var lastAddeditem = leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
+  
+  expect(leaf.getUnEmptyLeaves().length).toBe(4);
+
+  // Removing the last added item should collapse the parent leaf, recalculating
+  // the subitems...
+  lastAddeditem.remove();
+
+  // ... now we should be back down to 1 leaf.
+  expect(leaf.getUnEmptyLeaves().length).toBe(1);
+
+});
+
+
+describe('Honestly havn\'t really thought this test through, lucky if it\s accurate', function () {
+
+  var leaf = Leaf(props);
+  
+  var item1 = leaf.addItem({ x: 0, y: 0, val: 'A' });
+  
+  var item2 = leaf.addItem({ x: 1, y: 0, val: 'B' });
+  leaf.addItem({ x: 1, y: 1, val: 'C' });
+  leaf.addItem({ x: 0, y: 1, val: 'D' });
+  leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
+  leaf.addItem({ x: 0.126, y: 0.126, val: 'F' });
+  leaf.addItem({ x: 0.127, y: 0.127, val: 'G' });
+  leaf.addItem({ x: 0.1252, y: 0.1252, val: 'H' });
+  leaf.addItem({ x: 0.1252, y: 0.1252, val: 'I' });
+  leaf.addItem({ x: 0.1252, y: 0.1253, val: 'J' });
+  leaf.addItem({ x: 0.12511, y: 0.12511, val: 'K' });
+  leaf.addItem({ x: 0.12512, y: 0.12512, val: 'L' });
+  leaf.addItem({ x: 0.12513, y: 0.12513, val: 'M' });
+
+  expect(leaf.getUnEmptyLeaves().length).toBe(7);
+
+  item1.remove();
+  item2.remove();
+
+  expect(leaf.getUnEmptyLeaves().length).toBe(6);
+});
+
+
+
+describe('Leaf should be able to extend', function () {
+
+  var extensions = [{
+    name: 'test_extension',
+    func: function () {
+      return this.uid;
+    },
+  }];
+
+  var leaf = Leaf(props, extensions);
+
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
+  leaf.addItem({ x: 1, y: 0, val: 'B' });
+  leaf.addItem({ x: 1, y: 1, val: 'C' });
+  leaf.addItem({ x: 0, y: 1, val: 'D' });
+  leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
+
+  expect(leaf.test_extension()).toBe(leaf.uid);
+
+});
+
+
+
+
+test.run();
 
 // rosevelt work hard at work wirth doign (parks rec, work with people you love)
 
