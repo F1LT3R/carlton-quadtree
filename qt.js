@@ -162,293 +162,293 @@ var Leaf = require('./Leaf.js');
 
 
 
-// describe('Leaf should require definition properties', function () {
+describe('Leaf should require definition properties', function () {
   
-//   var leaf = Leaf();
-//   expect(typeof leaf).toBe('undefined');
+  var leaf = Leaf();
+  expect(typeof leaf).toBe('undefined');
 
-//   var leaf = Leaf({});
-//   expect(typeof leaf).toBe('undefined');
+  var leaf = Leaf({});
+  expect(typeof leaf).toBe('undefined');
 
-//   var leaf = Leaf({ bounds: null });
-//   expect(typeof leaf).toBe('undefined');
+  var leaf = Leaf({ bounds: null });
+  expect(typeof leaf).toBe('undefined');
 
-// });
-
-
-
-// describe('Leaf should be undefined if no bounds dimensions are passed', function () {
-
-//   var leaf = Leaf({
-//     bounds: {
-//       // top: 0,
-//       left: 0,
-//       bottom: 1,
-//       right: 1,
-//     }
-//   });
-//   expect(typeof leaf).toBe('undefined');
-
-//   var leaf = Leaf({
-//     bounds: {
-//       top: 0,
-//       // left: 0,
-//       bottom: 1,
-//       right: 1,
-//     }
-//   });
-//   expect(typeof leaf).toBe('undefined');
-
-//   var leaf = Leaf({
-//     bounds: {
-//       top: 0,
-//       left: 0,
-//       // bottom: 1,
-//       right: 1,
-//     }
-//   });
-//   expect(typeof leaf).toBe('undefined');
-
-
-//   var leaf = Leaf({
-//     bounds: {
-//       top: 0,
-//       left: 0,
-//       bottom: 1,
-//       // right: 1,
-//     }
-//   });
-//   expect(typeof leaf).toBe('undefined');
-
-// });
+});
 
 
 
-// describe('Leaf should instantiate if bounds have top, left, bottom, right dimensions', function () {
+describe('Leaf should be undefined if no bounds dimensions are passed', function () {
 
-//   var leaf = Leaf({
-//     bounds: {
-//       top: 0,
-//       left: 0,
-//       bottom: 1,
-//       right: 1,
-//     }
-//   });
+  var leaf = Leaf({
+    bounds: {
+      // top: 0,
+      left: 0,
+      bottom: 1,
+      right: 1,
+    }
+  });
+  expect(typeof leaf).toBe('undefined');
+
+  var leaf = Leaf({
+    bounds: {
+      top: 0,
+      // left: 0,
+      bottom: 1,
+      right: 1,
+    }
+  });
+  expect(typeof leaf).toBe('undefined');
+
+  var leaf = Leaf({
+    bounds: {
+      top: 0,
+      left: 0,
+      // bottom: 1,
+      right: 1,
+    }
+  });
+  expect(typeof leaf).toBe('undefined');
+
+
+  var leaf = Leaf({
+    bounds: {
+      top: 0,
+      left: 0,
+      bottom: 1,
+      // right: 1,
+    }
+  });
+  expect(typeof leaf).toBe('undefined');
+
+});
+
+
+
+describe('Leaf should instantiate if bounds have top, left, bottom, right dimensions', function () {
+
+  var leaf = Leaf({
+    bounds: {
+      top: 0,
+      left: 0,
+      bottom: 1,
+      right: 1,
+    }
+  });
   
-//   expect(typeof leaf).toBe('object');
-//   expect(typeof leaf.bounds).toBe('object');
-//   expect(typeof leaf.bounds.top).toBe('number');
-//   expect(typeof leaf.bounds.left).toBe('number');
-//   expect(typeof leaf.bounds.bottom).toBe('number');
-//   expect(typeof leaf.bounds.right).toBe('number');
+  expect(typeof leaf).toBe('object');
+  expect(typeof leaf.bounds).toBe('object');
+  expect(typeof leaf.bounds.top).toBe('number');
+  expect(typeof leaf.bounds.left).toBe('number');
+  expect(typeof leaf.bounds.bottom).toBe('number');
+  expect(typeof leaf.bounds.right).toBe('number');
 
-// });
-
-
+});
 
 
 
 
-// describe('New leaf should have no items and no leaves', function () {
-//   var leaf = Leaf(props);
-//   expect(leaf.items.length).toBe(0);
-//   expect(leaf.leaves.length).toBe(0);
-// });
+
+
+describe('New leaf should have no items and no leaves', function () {
+  var leaf = Leaf(props);
+  expect(leaf.items.length).toBe(0);
+  expect(leaf.leaves.length).toBe(0);
+});
 
 
 
-// describe('Adding an item should fail x, y, val/objectReference', function () {
+describe('Adding an item should fail x, y, val/objectReference', function () {
 
-//   var leaf = Leaf(props);
-//   leaf.addItem({});
-//   expect(leaf.items.length).toBe(0);
+  var leaf = Leaf(props);
+  leaf.addItem({});
+  expect(leaf.items.length).toBe(0);
 
-//   var leaf = Leaf(props);
-//   leaf.addItem({
-//     // x: 0,
-//     y: 0,
-//     val: 'A',
-//   });
-//   expect(leaf.items.length).toBe(0);
+  var leaf = Leaf(props);
+  leaf.addItem({
+    // x: 0,
+    y: 0,
+    val: 'A',
+  });
+  expect(leaf.items.length).toBe(0);
 
-//   var leaf = Leaf(props);
-//   leaf.addItem({
-//     x: 0,
-//     // y: 0,
-//     val: 'A',
-//   });
-//   expect(leaf.items.length).toBe(0);
+  var leaf = Leaf(props);
+  leaf.addItem({
+    x: 0,
+    // y: 0,
+    val: 'A',
+  });
+  expect(leaf.items.length).toBe(0);
 
-//   var leaf = Leaf(props);
-//   leaf.addItem({
-//     x: 0,
-//     y: 0,
-//     // val: 'A',
-//   });
-//   expect(leaf.items.length).toBe(0);
+  var leaf = Leaf(props);
+  leaf.addItem({
+    x: 0,
+    y: 0,
+    // val: 'A',
+  });
+  expect(leaf.items.length).toBe(0);
 
-// });
-
-
-
-// describe('Leaf should have 1 item after adding first item', function () {
-
-//   var leaf = Leaf(props);
-//   leaf.addItem({ x: 0, y: 0, val: 'A' });
-//   expect(leaf.items.length).toBe(1);
-
-// });
+});
 
 
 
-// describe('Leaf should have 2 items after adding second item', function () {
+describe('Leaf should have 1 item after adding first item', function () {
 
-//   var leaf = Leaf(props);
-//   leaf.addItem({ x: 0, y: 0, val: 'A' });
-//   leaf.addItem({ x: 1, y: 0, val: 'B' });
-//   expect(leaf.items.length).toBe(2);
+  var leaf = Leaf(props);
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
+  expect(leaf.items.length).toBe(1);
 
-// });
-
-
-
-// describe('Leaf should have 3 items after adding third item', function () {
-
-//   var leaf = Leaf(props);
-//   leaf.addItem({ x: 0, y: 0, val: 'A' });
-//   leaf.addItem({ x: 1, y: 0, val: 'B' });
-//   leaf.addItem({ x: 1, y: 1, val: 'C' });
-//   expect(leaf.items.length).toBe(3);
-
-// });
+});
 
 
 
-// describe('Leaf should have 4 items after adding forth item', function () {
+describe('Leaf should have 2 items after adding second item', function () {
 
-//   var leaf = Leaf(props);
-//   leaf.addItem({ x: 0, y: 0, val: 'A' });
-//   leaf.addItem({ x: 1, y: 0, val: 'B' });
-//   leaf.addItem({ x: 1, y: 1, val: 'C' });
-//   leaf.addItem({ x: 0, y: 1, val: 'D' });
-//   expect(leaf.items.length).toBe(4);
+  var leaf = Leaf(props);
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
+  leaf.addItem({ x: 1, y: 0, val: 'B' });
+  expect(leaf.items.length).toBe(2);
 
-// });
+});
 
 
 
-// describe('getItems should return 4 and 5 items respectively', function () {
+describe('Leaf should have 3 items after adding third item', function () {
 
-//   var leaf = Leaf(props);
+  var leaf = Leaf(props);
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
+  leaf.addItem({ x: 1, y: 0, val: 'B' });
+  leaf.addItem({ x: 1, y: 1, val: 'C' });
+  expect(leaf.items.length).toBe(3);
+
+});
+
+
+
+describe('Leaf should have 4 items after adding forth item', function () {
+
+  var leaf = Leaf(props);
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
+  leaf.addItem({ x: 1, y: 0, val: 'B' });
+  leaf.addItem({ x: 1, y: 1, val: 'C' });
+  leaf.addItem({ x: 0, y: 1, val: 'D' });
+  expect(leaf.items.length).toBe(4);
+
+});
+
+
+
+describe('getItems should return 4 and 5 items respectively', function () {
+
+  var leaf = Leaf(props);
   
-//   // Add 4 items
-//   for (var i=0; i< 4; i++) {
-//     leaf.addItem({
-//       x: Math.random(),
-//       y: Math.random(),
-//       val: i
-//     });
-//   }
+  // Add 4 items
+  for (var i=0; i< 4; i++) {
+    leaf.addItem({
+      x: Math.random(),
+      y: Math.random(),
+      val: i
+    });
+  }
 
-//   // Check we have 4 items
-//   expect(typeof leaf).toBe('object');
-//   expect(leaf.getItems().length).toBe(4)
+  // Check we have 4 items
+  expect(typeof leaf).toBe('object');
+  expect(leaf.getItems().length).toBe(4)
 
-//   // Add one more item
-//   leaf.addItem({
-//     x: Math.random(),
-//     y: Math.random(),
-//     val: i
-//   });
+  // Add one more item
+  leaf.addItem({
+    x: Math.random(),
+    y: Math.random(),
+    val: i
+  });
 
-//   // check we have 5 items
-//   expect(leaf.getItems().length).toBe(5)
+  // check we have 5 items
+  expect(leaf.getItems().length).toBe(5)
   
-// });
+});
 
 
 
-// describe('Leaf should count 16,384 items after adding 16,384 items', function () {
+describe('Leaf should count 16,384 items after adding 16,384 items', function () {
 
-//   var leaf = Leaf(props);
+  var leaf = Leaf(props);
   
-//   for (var i=0; i< 16384; i++) {
-//     leaf.addItem({
-//       x: Math.random(), // random from 0-1 
-//       y: Math.random(), // random from 0-1
-//       val: i
-//     });
-//   }
+  for (var i=0; i< 16384; i++) {
+    leaf.addItem({
+      x: Math.random(), // random from 0-1 
+      y: Math.random(), // random from 0-1
+      val: i
+    });
+  }
 
-//   expect(typeof leaf).toBe('object');
-//   expect(leaf.getItems().length).toBe(16384)
+  expect(typeof leaf).toBe('object');
+  expect(leaf.getItems().length).toBe(16384)
 
-// }, 400);
+}, 400);
 
 
 
-// describe('Item should have reference to leaf', function () {
+describe('Item should have reference to leaf', function () {
 
-//   var leaf = Leaf(props);
+  var leaf = Leaf(props);
   
-//   leaf.addItem({ x: 0, y: 0, val: 'A' });
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
   
-//   var item = leaf.items[0];
+  var item = leaf.items[0];
   
-//   expect(typeof item.leaf).toBe('object');
+  expect(typeof item.leaf).toBe('object');
   
-//   // Should see it's own reflection
-//   expect(item.leaf.items.length).toBe(1);
+  // Should see it's own reflection
+  expect(item.leaf.items.length).toBe(1);
 
-// });
+});
 
 
-// describe('Item\'s leaf reference should change when it\s leaf changes', function () {
+describe('Item\'s leaf reference should change when it\s leaf changes', function () {
 
-//   var leaf = Leaf(props);
+  var leaf = Leaf(props);
 
-//   leaf.addItem({ x: 0, y: 0, val: 'A' });
-//   leaf.addItem({ x: 1, y: 0, val: 'B' });
-//   leaf.addItem({ x: 1, y: 1, val: 'C' });
-//   leaf.addItem({ x: 0, y: 1, val: 'D' });
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
+  leaf.addItem({ x: 1, y: 0, val: 'B' });
+  leaf.addItem({ x: 1, y: 1, val: 'C' });
+  leaf.addItem({ x: 0, y: 1, val: 'D' });
 
-//   leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
+  leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
   
-//   var item = leaf.leaves[0].items[0];
+  var item = leaf.leaves[0].items[0];
   
-//   expect(typeof item.leaf).toBe('object');
+  expect(typeof item.leaf).toBe('object');
   
-//   // There shouldbe two items on this leaf
-//   expect(item.leaf.items.length).toBe(2);
+  // There shouldbe two items on this leaf
+  expect(item.leaf.items.length).toBe(2);
   
-//   // The item itself should have no id
-//   expect(typeof item.id).toBe('undefined');
+  // The item itself should have no id
+  expect(typeof item.id).toBe('undefined');
 
-//   // Check the the IDs on this leaf are the same
-//   expect(item.leaf.id).toEqual(item.leaf.items[0].leaf.id);
-//   expect(item.leaf.id).toEqual(item.leaf.items[1].leaf.id);
+  // Check the the IDs on this leaf are the same
+  expect(item.leaf.id).toEqual(item.leaf.items[0].leaf.id);
+  expect(item.leaf.id).toEqual(item.leaf.items[1].leaf.id);
 
-// });
+});
 
 
 
-// describe('getUnEmptyLeaves should return 4 leaves, each containing 1 item', function () {
+describe('getUnEmptyLeaves should return 4 leaves, each containing 1 item', function () {
 
-//   var leaf = Leaf(props);
+  var leaf = Leaf(props);
 
-//   leaf.addItem({ x: 0, y: 0, val: 'A' });
-//   leaf.addItem({ x: 1, y: 0, val: 'B' });
-//   leaf.addItem({ x: 1, y: 1, val: 'C' });
-//   leaf.addItem({ x: 0, y: 1, val: 'D' });
+  leaf.addItem({ x: 0, y: 0, val: 'A' });
+  leaf.addItem({ x: 1, y: 0, val: 'B' });
+  leaf.addItem({ x: 1, y: 1, val: 'C' });
+  leaf.addItem({ x: 0, y: 1, val: 'D' });
 
-//   var unEmptyLeaves = leaf.getUnEmptyLeaves();
+  var unEmptyLeaves = leaf.getUnEmptyLeaves();
   
-//   expect(unEmptyLeaves.length).toEqual(1);
+  expect(unEmptyLeaves.length).toEqual(1);
 
-//   // Expect the only unempty lead to have 4 items
-//   expect(unEmptyLeaves[0].items.length).toBe(4);
+  // Expect the only unempty lead to have 4 items
+  expect(unEmptyLeaves[0].items.length).toBe(4);
 
-// });
+});
 
 
 
@@ -480,7 +480,7 @@ describe('getUnEmptyLeaves should return 4 leaves, each containing > 0 items', f
 
 
 
-describe('Leaf with 16,384 items should have > 0 unempty leaves', function () {
+describe('unEmptyLeaves.items length should match getItems.length', function () {
 
   var leaf = Leaf(props);
 
@@ -500,14 +500,12 @@ describe('Leaf with 16,384 items should have > 0 unempty leaves', function () {
   leaf.addItem({ x: 0.12511, y: 0.12511, val: 'K' });
   leaf.addItem({ x: 0.12512, y: 0.12512, val: 'L' });
   leaf.addItem({ x: 0.12513, y: 0.12513, val: 'M' });
-
   
   var unEmptyLeaves = leaf.getUnEmptyLeaves();
 
   // We should have 11 unempty leaves with the above setup
   expect(unEmptyLeaves.length).toBe(7);
   
-
   var allItems = leaf.getItems();
   // We should have 13 items in the tree
   expect(allItems.length).toBe(13);
@@ -517,7 +515,7 @@ describe('Leaf with 16,384 items should have > 0 unempty leaves', function () {
     
     // Every unempty leaf should have more than 1 item
     expect(subleaf.items.length).toBeGreaterThan(0);
-    
+
     subleaf_items = subleaf_items.concat(subleaf.items);
   });
 
@@ -532,6 +530,4 @@ describe('Leaf with 16,384 items should have > 0 unempty leaves', function () {
 runTests();
 
 // rosevelt work hard at work wirth doign (parks rec, work with people you love)
-
-
 

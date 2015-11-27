@@ -168,7 +168,7 @@ Leaf = function (props) {
         this.place(item, this.leaves);
         return;
       }
-      
+
       if (this.items.length < 4) {
         item.leaf = this;
         this.items.push(item);
@@ -216,16 +216,12 @@ Leaf = function (props) {
         bottom: this.bounds.bottom,
       };
 
-      // this.leaves.push(
-      //   Leaf({bounds: subBoundsTopLeft    , depth: this.depth }),
-      //   Leaf({bounds: subBoundsTopRight   , depth: this.depth }),
-      //   Leaf({bounds: subBoundsBottomRight, depth: this.depth }),
-      //   Leaf({bounds: subBoundsBottomLeft , depth: this.depth })
-      // );
-      this.leaves.push(Leaf({bounds: subBoundsTopLeft    , depth: this.depth }));
-      this.leaves.push(Leaf({bounds: subBoundsTopRight   , depth: this.depth }));
-      this.leaves.push(Leaf({bounds: subBoundsBottomRight, depth: this.depth }));
-      this.leaves.push(Leaf({bounds: subBoundsBottomLeft , depth: this.depth }));
+      this.leaves.push(
+        Leaf({bounds: subBoundsTopLeft    , depth: this.depth }),
+        Leaf({bounds: subBoundsTopRight   , depth: this.depth }),
+        Leaf({bounds: subBoundsBottomRight, depth: this.depth }),
+        Leaf({bounds: subBoundsBottomLeft , depth: this.depth })
+      );
     },
 
     shuffle: function (items, leaves) {
