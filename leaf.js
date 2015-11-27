@@ -1,11 +1,128 @@
-function isInBounds (item, bounds) {
 
+function isInBounds (item, bounds) {
   if (item.x >= bounds.left && 
       item.x < bounds.right &&
       item.y >= bounds.top &&
       item.y < bounds.bottom) {
   
     return true;
+  }
+
+  return false;
+}
+
+
+function shuffle (items, leaves) {
+  items.forEach(function (subitem) {
+    leaves.forEach(function (subleaf) {
+      if (isInBounds(subitem, subleaf.bounds)) {
+        subleaf.addItem(subitem);
+      }
+    });
+  });
+}
+
+
+function place (item, leaves) {
+  leaves.forEach(function (subleaf) {
+    if (isInBounds(item, subleaf.bounds)) {
+      subleaf.addItem(item);
+    }
+  });
+}
+
+
+function split (leaf) {
+  var midX = leaf.bounds.left + (leaf.bounds.right  - leaf.bounds.left) / 2;
+  var midY = leaf.bounds.top +  (leaf.bounds.bottom - leaf.bounds.top)  / 2;
+
+  var subBoundsTopLeft = {
+    top: leaf.bounds.top,
+    left: leaf.bounds.left,
+    right: midX,
+    bottom: midY,
+  };
+
+  var subBoundsTopRight = {
+    top: leaf.bounds.top,
+    left: midX,
+    right: leaf.bounds.right,
+    bottom: midY,
+  };
+
+  var subBoundsBottomRight = {
+    top: midY,
+    left: midX,
+    right: leaf.bounds.right,
+    bottom: leaf.bounds.bottom,
+  };
+
+  var subBoundsBottomLeft = {
+    top: midY,
+    left: leaf.bounds.left,
+    right: midX,
+    bottom: leaf.bounds.bottom,
+  };
+
+  leaf.leaves.push(
+    Leaf({bounds: subBoundsTopLeft    , depth: leaf.depth }),
+    Leaf({bounds: subBoundsTopRight   , depth: leaf.depth }),
+    Leaf({bounds: subBoundsBottomRight, depth: leaf.depth }),
+    Leaf({bounds: subBoundsBottomLeft , depth: leaf.depth })
+  );
+}
+
+
+function isInvalidLeaf (props) {
+  if (typeof props == 'undefined') {
+    return true;
+  }
+
+  if (!props.bounds) {
+    return true;
+  }
+
+  if (props.hasOwnProperty('bounds')) {
+    
+    if (!props.bounds.hasOwnProperty('top')) {
+      return true;
+    }
+
+    if (!props.bounds.hasOwnProperty('left')) {
+      return true;
+    }
+
+    if (!props.bounds.hasOwnProperty('bottom')) {
+      return true;
+    }
+
+    if (!props.bounds.hasOwnProperty('right')) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+function isInvalidItem (item) {
+  if (!item) {
+    return true;
+  }
+
+  if (typeof item == 'object') {
+    
+    if (!item.hasOwnProperty('x')) {
+      return true;
+    }
+
+    if (!item.hasOwnProperty('y')) {
+      return true;
+    }
+
+    if (!item.hasOwnProperty('val')) {
+      return true;
+    }
   }
 
   return false;
@@ -20,42 +137,18 @@ var count = 0
 
 Leaf = function (props) {
 
-  if (typeof props == 'undefined') {
+  if (isInvalidLeaf(props)) {
     return undefined;
   }
 
-  if (!props.bounds) {
-    return undefined;
-  }
-
-
-  if (props.hasOwnProperty('bounds')) {
-    
-    if (!props.bounds.hasOwnProperty('top')) {
-      return undefined;
-    }
-
-    if (!props.bounds.hasOwnProperty('left')) {
-      return undefined;
-    }
-
-    if (!props.bounds.hasOwnProperty('bottom')) {
-      return undefined;
-    }
-
-    if (!props.bounds.hasOwnProperty('right')) {
-      return undefined;
-    }
-  }
-
-  count +=1;
+  count += 1;
   
   return {
 
     bounds: props.bounds,
     depth: props.depth + 1 || 0,
     
-    id: count,
+    uid: count,
     leaves: [],
     items: [],
 
@@ -121,51 +214,30 @@ Leaf = function (props) {
 
     },
 
-    getUnEmptyLeaves: function (snowball) {
-
-      if (!snowball) {
-        var snowball = [];
-      }
-
+    getUnEmptyLeaves: function () {
       if (this.items.length > 0) {
-        return snowball.concat([this]);
+        return [this];
       }
 
       if (this.leaves.length > 0) {
-        return snowball
-          .concat(this.leaves[0].getUnEmptyLeaves(snowball))
-          .concat(this.leaves[1].getUnEmptyLeaves(snowball))
-          .concat(this.leaves[2].getUnEmptyLeaves(snowball))
-          .concat(this.leaves[3].getUnEmptyLeaves(snowball))
+        return this.leaves[0].getUnEmptyLeaves()
+            .concat(this.leaves[1].getUnEmptyLeaves())
+            .concat(this.leaves[2].getUnEmptyLeaves())
+            .concat(this.leaves[3].getUnEmptyLeaves())
           ;
       }
 
-      return snowball.concat([]);
+      return [];
     },
 
     addItem: function (item) {
-      if (!item) {
+        
+      if (isInvalidItem(item)) {
         return undefined;
       }
 
-      if (typeof item == 'object') {
-        
-        if (!item.hasOwnProperty('x')) {
-          return undefined;
-        }
-
-        if (!item.hasOwnProperty('y')) {
-          return undefined;
-        }
-
-        if (!item.hasOwnProperty('val')) {
-          return undefined;
-        }
-
-      }
-
       if (this.leaves.length > 0) {
-        this.place(item, this.leaves);
+        place(item, this.leaves);
         return;
       }
 
@@ -176,72 +248,13 @@ Leaf = function (props) {
       }
 
       if (this.items.length === 4) {
-        this.split();
-        this.shuffle(this.items, this.leaves);
+        split(this);
+        shuffle(this.items, this.leaves);
         this.items = [];
-        this.place(item, this.leaves);
+        place(item, this.leaves);
         return;
       }
     },
-    
-    split: function () {
-      var midX = this.bounds.left + (this.bounds.right - this.bounds.left) / 2;
-      var midY = this.bounds.top + (this.bounds.bottom - this.bounds.top) / 2;
-
-      var subBoundsTopLeft = {
-        top: this.bounds.top,
-        left: this.bounds.left,
-        right: midX,
-        bottom: midY,
-      };
-
-      var subBoundsTopRight = {
-        top: this.bounds.top,
-        left: midX,
-        right: this.bounds.right,
-        bottom: midY,
-      };
-
-      var subBoundsBottomRight = {
-        top: midY,
-        left: midX,
-        right: this.bounds.right,
-        bottom: this.bounds.bottom,
-      };
-
-      var subBoundsBottomLeft = {
-        top: midY,
-        left: this.bounds.left,
-        right: midX,
-        bottom: this.bounds.bottom,
-      };
-
-      this.leaves.push(
-        Leaf({bounds: subBoundsTopLeft    , depth: this.depth }),
-        Leaf({bounds: subBoundsTopRight   , depth: this.depth }),
-        Leaf({bounds: subBoundsBottomRight, depth: this.depth }),
-        Leaf({bounds: subBoundsBottomLeft , depth: this.depth })
-      );
-    },
-
-    shuffle: function (items, leaves) {
-      items.forEach(function (subitem) {
-        leaves.forEach(function (subleaf) {
-          if (isInBounds(subitem, subleaf.bounds)) {
-            subleaf.addItem(subitem);
-          }
-        });
-      });
-    },
-
-    place: function (item, leaves) {
-      leaves.forEach(function (subleaf) {
-        if (isInBounds(item, subleaf.bounds)) {
-          subleaf.addItem(item);
-        }
-      });
-    },
-
   }
 }
 
