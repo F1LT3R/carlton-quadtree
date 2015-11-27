@@ -1,5 +1,4 @@
 <script src="leaf.js"></script>
-<script src="leaf.print.ext.js"></script>
 <canvas width="2000" height="2000" id="canvas" style="border:1px solid black"></canvas>
 
 <script>
@@ -15,89 +14,82 @@ c.fillRect(0,0,w,h);
 console.log(canvas.width, c);
 
 
+var extensions = [{
+  name: "print", 
+  func: function () {
+    
+    function line (l) {
+      var str = '';
+      for (var i=0; i< l*3; i++) {
+        str+=' ';
+      }
+      return str+'-';
+    }
+
+    function vals () {
+      var str = '';
+      if (this.items.length > 0) {
+        this.items.forEach(function (subitem) {
+          str += subitem.val
+        });
+      }
+      return str;
+    }
+
+    console.log(line(this.depth) + '['+this.depth+':'+vals.call(this)+']');
+
+    this.leaves.forEach(function (subleaf) {
+      subleaf.print();
+    });
+  }
+},
+{
+  name: "draw",
+  func: function () {
+
+      c.beginPath();
+    c.moveTo(this.bounds.left * w, this.bounds.top* h);
+    c.lineTo(this.bounds.right* w, this.bounds.top* h);
+    c.lineTo(this.bounds.right* w, this.bounds.bottom* h);
+    c.lineTo(this.bounds.left* w, this.bounds.bottom * h);
+    c.closePath();
+    c.strokeStyle='rgba(0,255,255,.33)';
+    c.stroke();
+
+    this.items.forEach(function (item) {
+      c.fillStyle='rgba(255,0,255,1)';
+      c.fillRect((item.x * w)-1.5, (item.y * h)-1.5, 3, 3);
+    });
+
+    this.leaves.forEach(function (subleaf) {
+      subleaf.draw();
+    });
+  }
+}];
+
+var props = {
+  bounds: {
+    top: 0,
+    left: 0,
+    bottom: 1,
+    right: 1,
+  }
+};
 
 
 
 
+var leaf = Leaf(props, extensions);
+
+for (var i=0; i< 12345; i++) {
+  leaf.addItem({
+    x: Math.random(), // random from 0-1 
+    y: Math.random(), // random from 0-1
+    val: i
+  });
+}
 
 
-    // draw: function () {
-      
-      // function line (l) {
-      //   var str = '';
-      //   for (var i=0; i< l*3; i++) {
-      //     str+=' ';
-      //   }
-      //   return str+'-';
-      // }
-
-      // function vals () {
-      //   var str = '';
-      //   if (this.items.length > 0) {
-      //     this.items.forEach(function (subitem) {
-      //       str += subitem.val
-      //     });
-      //   }
-      //   return str
-      // }
-
-    //   c.beginPath();
-    //   c.moveTo(this.bounds.left * w, this.bounds.top* h);
-    //   c.lineTo(this.bounds.right* w, this.bounds.top* h);
-    //   c.lineTo(this.bounds.right* w, this.bounds.bottom* h);
-    //   c.lineTo(this.bounds.left* w, this.bounds.bottom * h);
-    //   c.closePath();
-    //   c.strokeStyle='rgba(0,255,255,.33)';
-    //   c.stroke();
-
-    //   this.items.forEach(function (item) {
-    //     c.fillStyle='rgba(255,0,255,1)';
-    //     c.fillRect((item.x * w)-1.5, (item.y * h)-1.5, 3, 3);
-    //   });
-
-    //   // console.log(line(this.depth) + '['+this.depth+':'+vals.call(this)+']');
-
-    //   this.leaves.forEach(function (subleaf) {
-    //     subleaf.draw();
-    //   });
-    // },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// var props = {
-//   bounds: {
-//     top: 0,
-//     left: 0,
-//     bottom: 1,
-//     right: 1,
-//   }
-// };
-
-
-// var leaf = Leaf(props);
-
-// var leaf = Leaf(props);
-  
-//   for (var i=0; i< 12345; i++) {
-//     leaf.addItem({
-//       x: Math.random(), // random from 0-1 
-//       y: Math.random(), // random from 0-1
-//       val: i
-//     });
-//   }
-
-
-// leaf.draw();
+leaf.draw();
   
 </script>

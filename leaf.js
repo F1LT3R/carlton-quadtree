@@ -286,6 +286,6 @@ function Item (item, leaf) {
 
 
 
-if (module) {
+if (typeof module !== 'undefined') {
   module.exports = Leaf;
 }
