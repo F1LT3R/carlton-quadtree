@@ -1,4 +1,4 @@
-var test = require('./test.js');
+var test = require('./test-runner.js');
 
 describe = test.describe;
 expect = test.expect;
@@ -479,29 +479,6 @@ describe('Honestly havn\'t really thought this test through, lucky if it\s accur
   item2.remove();
 
   expect(leaf.getUnEmptyLeaves().length).toBe(6);
-});
-
-
-
-describe('Leaf should be able to extend', function () {
-
-  var extensions = [{
-    name: 'test_extension',
-    func: function () {
-      return this.uid;
-    },
-  }];
-
-  var leaf = Leaf(props, extensions);
-
-  leaf.addItem({ x: 0, y: 0, val: 'A' });
-  leaf.addItem({ x: 1, y: 0, val: 'B' });
-  leaf.addItem({ x: 1, y: 1, val: 'C' });
-  leaf.addItem({ x: 0, y: 1, val: 'D' });
-  leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
-
-  expect(leaf.test_extension()).toBe(leaf.uid);
-
 });
 
 

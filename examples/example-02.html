@@ -1,0 +1,121 @@
+<script src="../leaf.js"></script>
+<canvas width="400" height="400" id="canvas" style="border:1px solid black"></canvas>
+
+<script>
+
+
+var c = canvas.getContext('2d')
+  , w = canvas.width
+  , h = canvas.height
+  ;
+
+c.fillRect(0,0,w,h);
+
+console.log(canvas.width, c);
+
+
+
+
+ function draw () {
+  c.beginPath();
+  c.moveTo(this.bounds.left * w, this.bounds.top* h);
+  c.lineTo(this.bounds.right* w, this.bounds.top* h);
+  c.lineTo(this.bounds.right* w, this.bounds.bottom* h);
+  c.lineTo(this.bounds.left* w, this.bounds.bottom * h);
+  c.closePath();
+  c.strokeStyle='rgba(0,255,255,.33)';
+  c.stroke();
+
+  this.items.forEach(function (item) {
+    c.fillStyle='rgba(255,0,255,1)';
+    // c.fillRect((item.x * w)-0.5, (item.y * h)-0.5, 1, 1);
+    c.fillRect((item.x * w)-1.5, (item.y * h)-1.5, 3, 3);
+  });
+
+  this.leaves.forEach(function (subleaf) {
+    draw.call(subleaf);
+  });
+}
+
+
+
+var props = {
+  bounds: {
+    top: 0,
+    left: 0,
+    bottom: 1,
+    right: 1,
+  }
+};
+
+
+
+
+var leaf = Leaf(props);
+
+for (var i=0; i< 1234; i++) {
+  leaf.addItem({
+    x: Math.random(), // random from 0-1 
+    y: Math.random(), // random from 0-1
+    val: {
+      id: i,
+      spx: (Math.random()-0.5) / 100,
+      spy: (Math.random()-0.5) / 100,
+    }
+  });
+
+}
+
+function isInBounds (item, bounds) {
+  if (item.x >= bounds.left && 
+      item.x < bounds.right &&
+      item.y >= bounds.top &&
+      item.y < bounds.bottom) {
+  
+    return true;
+  }
+
+  return false;
+}
+
+
+var items = leaf.getItems();
+
+c.lineWidth = 1;
+
+
+function drawleaves () {
+  // var start = + new Date();
+  
+  c.fillStyle="#000";
+  c.fillRect(0,0,w,h);
+
+  items.forEach(function (item) {
+    
+    if (item.x + item.val.spx > props.bounds.left && 
+        item.y + item.val.spy > props.bounds.top &&
+        item.x + item.val.spx < props.bounds.right && 
+        item.y + item.val.spy < props.bounds.bottom
+      ) {
+      
+      item.x += item.val.spx;
+      item.y += item.val.spy;
+
+      if (!isInBounds(item, item.leaf)) {
+        item.remove();
+        leaf.addItem(item);
+      }
+    }
+
+  });
+
+  draw.call(leaf);
+
+  // console.log( (+ new Date()) - start);
+}
+
+
+setInterval(drawleaves, 10);
+
+  
+</script>

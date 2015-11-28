@@ -1,6 +1,5 @@
 var leafCount = 0
   , itemCount = 0
-  , extensionMemory = []
   ;
 
 function isInBounds (item, bounds) {
@@ -174,7 +173,7 @@ Leaf = function (props, extensions) {
 
   leafCount += 1;
   
-  var new_leaf = {
+  return {
 
     bounds: props.bounds,
     depth: props.depth + 1 || 0,
@@ -251,19 +250,7 @@ Leaf = function (props, extensions) {
       }
     },
 
-  }; // EO new_leaf
-
-  if (extensions) {
-    extensionMemory = extensionMemory.concat(extensions);
-  }
-  
-  if (extensionMemory) {
-    extensionMemory.forEach(function (extension) {
-      new_leaf[extension.name] = extension.func;
-    });
-  }
-
-  return new_leaf;
+  };
 
 }
 
@@ -277,6 +264,7 @@ function Item (item, leaf) {
   item.index = leaf.items.push(item) - 1;
   
   item.remove = function () {
+    
     this.leaf.items.splice(this.index, 1);
     this.leaf.parent.collapse();
   }
@@ -286,6 +274,7 @@ function Item (item, leaf) {
 
 
 
+// Only export if in Node env.
 if (typeof module !== 'undefined') {
   module.exports = Leaf;
 }

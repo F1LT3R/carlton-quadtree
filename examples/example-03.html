@@ -1,0 +1,135 @@
+<style>
+body{
+  background: #000;
+}
+</style>
+<script src="../leaf.js"></script>
+<canvas width="600" height="600" id="canvas" style="border:1px solid black"></canvas>
+
+<script>
+
+
+var c = canvas.getContext('2d')
+  , w = canvas.width
+  , h = canvas.height
+  ;
+
+c.fillRect(0,0,w,h);
+
+console.log(canvas.width, c);
+
+
+
+
+ function draw () {
+  c.beginPath();
+  c.moveTo(this.bounds.left * w, this.bounds.top* h);
+  c.lineTo(this.bounds.right* w, this.bounds.top* h);
+  c.lineTo(this.bounds.right* w, this.bounds.bottom* h);
+  c.lineTo(this.bounds.left* w, this.bounds.bottom * h);
+  c.closePath();
+  c.strokeStyle='rgba(0,255,255,.33)';
+  c.stroke();
+
+  this.items.forEach(function (item) {
+    c.fillStyle='rgba(255,0,255,1)';
+    // c.fillRect((item.x * w)-0.5, (item.y * h)-0.5, 1, 1);
+    c.fillRect((item.x * w)-1.5, (item.y * h)-1.5, 3, 3);
+  });
+
+  this.leaves.forEach(function (subleaf) {
+    draw.call(subleaf);
+  });
+}
+
+
+
+var props = {
+  bounds: {
+    top: 0,
+    left: 0,
+    bottom: 1,
+    right: 1,
+  }
+};
+
+
+
+
+var leaf = Leaf(props);
+
+for (var i=0; i< 444; i++) {
+  leaf.addItem({
+    x: Math.random(),
+    y: Math.random(),
+    val: {
+      id: i,
+      spx: (Math.random()-0.5) / 1000,
+      spy: (Math.random()-0.5) / 1000,
+      // spx: 0.00,
+      // spy: 0.01,
+    }
+  });
+
+}
+
+function isInBounds (item, bounds) {
+  if (item.x >= bounds.left && 
+      item.x < bounds.right &&
+      item.y >= bounds.top &&
+      item.y < bounds.bottom) {
+  
+    return true;
+  }
+
+  return false;
+}
+
+
+var items = leaf.getItems();
+
+c.lineWidth = 1;
+
+
+function drawleaves () {
+  // var start = + new Date();
+  
+  c.fillStyle="#000";
+  c.fillRect(0,0,w,h);
+
+  items.forEach(function (item) {
+    
+    item.x += item.val.spx;
+    item.y += item.val.spy;
+
+    if (item.x < props.bounds.left) {
+     item.x = props.bounds.right - (props.bounds.left - item.x); 
+    }
+    if (item.x >= props.bounds.right) {
+     item.x = props.bounds.left - (props.bounds.right - item.x); 
+    }
+    if (item.y < props.bounds.top) {
+     item.y = props.bounds.bottom - (props.bounds.top - item.y); 
+    }
+    if (item.y >= props.bounds.bottom) {
+     item.y = props.bounds.top - (props.bounds.bottom - item.y); 
+    }
+    
+
+    if (!isInBounds(item, item.leaf)) {
+      item.remove();
+      leaf.addItem(item);
+    }
+
+  });
+
+  draw.call(leaf);
+
+  // console.log( (+ new Date()) - start);
+}
+
+
+setInterval(drawleaves, 30);
+
+  
+</script>
