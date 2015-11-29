@@ -73,6 +73,7 @@ var extensions = [
 
 
  function draw () {
+  
   c.beginPath();
   c.moveTo(this.bounds.left * w, this.bounds.top* h);
   c.lineTo(this.bounds.right* w, this.bounds.top* h);
@@ -120,7 +121,11 @@ function drawleaves () {
     leaf.addItem({
       x: Math.random(), // random from 0-1 
       y: Math.random(), // random from 0-1
-      val: i
+      val: {
+        id: i,
+        spx: (Math.random()-0.5) / 1000,
+        spy: (Math.random()-0.5) / 1000,
+      }
     });
   }
 
