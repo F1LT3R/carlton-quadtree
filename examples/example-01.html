@@ -16,9 +16,9 @@ console.log(canvas.width, c);
 
 var extensions = [
 // {
-//   name: "print", 
+//   name: "print",
 //   func: function () {
-    
+
 //     function line (l) {
 //       var str = '';
 //       for (var i=0; i< l*3; i++) {
@@ -73,7 +73,7 @@ var extensions = [
 
 
  function draw () {
-  
+
   c.beginPath();
   c.moveTo(this.bounds.left * w, this.bounds.top* h);
   c.lineTo(this.bounds.right* w, this.bounds.top* h);
@@ -113,13 +113,13 @@ c.lineWidth = 1;
 
 function drawleaves () {
   // var start = + new Date();
-  
+
   var leaf = Leaf(props);
 
 
   for (var i=0; i< 1234; i++) {
     leaf.addItem({
-      x: Math.random(), // random from 0-1 
+      x: Math.random(), // random from 0-1
       y: Math.random(), // random from 0-1
       val: {
         id: i,

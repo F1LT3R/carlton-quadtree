@@ -27,7 +27,7 @@ var Leaf = require('./Leaf.js');
 
 
 describe('Leaf should require definition properties', function () {
-  
+
   var leaf = Leaf();
   expect(typeof leaf).toBe('undefined');
 
@@ -98,7 +98,7 @@ describe('Leaf should instantiate if bounds have top, left, bottom, right dimens
       right: 1,
     }
   });
-  
+
   expect(typeof leaf).toBe('object');
   expect(typeof leaf.bounds).toBe('object');
   expect(typeof leaf.bounds.top).toBe('number');
@@ -204,7 +204,7 @@ describe('Leaf should have 4 items after adding forth item', function () {
 describe('getItems should return 4 and 5 items respectively', function () {
 
   var leaf = Leaf(props);
-  
+
   // Add 4 items
   for (var i=0; i< 4; i++) {
     leaf.addItem({
@@ -227,7 +227,7 @@ describe('getItems should return 4 and 5 items respectively', function () {
 
   // check we have 5 items
   expect(leaf.getItems().length).toBe(5)
-  
+
 });
 
 
@@ -235,10 +235,10 @@ describe('getItems should return 4 and 5 items respectively', function () {
 describe('Leaf should count 16,384 items after adding 16,384 items', function () {
 
   var leaf = Leaf(props);
-  
+
   for (var i=0; i< 16384; i++) {
     leaf.addItem({
-      x: Math.random(), // random from 0-1 
+      x: Math.random(), // random from 0-1
       y: Math.random(), // random from 0-1
       val: i
     });
@@ -254,13 +254,13 @@ describe('Leaf should count 16,384 items after adding 16,384 items', function ()
 describe('Item should have reference to leaf', function () {
 
   var leaf = Leaf(props);
-  
+
   leaf.addItem({ x: 0, y: 0, val: 'A' });
-  
+
   var item = leaf.items[0];
-  
+
   expect(typeof item.leaf).toBe('object');
-  
+
   // Should see it's own reflection
   expect(item.leaf.items.length).toBe(1);
 
@@ -277,14 +277,14 @@ describe('Item\'s leaf reference should change when it\s leaf changes', function
   leaf.addItem({ x: 0, y: 1, val: 'D' });
 
   leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
-  
+
   var item = leaf.leaves[0].items[0];
-  
+
   expect(typeof item.leaf).toBe('object');
-  
+
   // There shouldbe two items on this leaf
   expect(item.leaf.items.length).toBe(2);
-  
+
   // The item itself should have no id
   expect(typeof item.id).toBe('undefined');
 
@@ -306,7 +306,7 @@ describe('getUnEmptyLeaves should return 4 leaves, each containing 1 item', func
   leaf.addItem({ x: 0, y: 1, val: 'D' });
 
   var unEmptyLeaves = leaf.getUnEmptyLeaves();
-  
+
   expect(unEmptyLeaves.length).toEqual(1);
 
   // Expect the only unempty lead to have 4 items
@@ -364,19 +364,19 @@ describe('unEmptyLeaves.items length should match getItems.length', function () 
   leaf.addItem({ x: 0.12511, y: 0.12511, val: 'K' });
   leaf.addItem({ x: 0.12512, y: 0.12512, val: 'L' });
   leaf.addItem({ x: 0.12513, y: 0.12513, val: 'M' });
-  
+
   var unEmptyLeaves = leaf.getUnEmptyLeaves();
 
   // We should have 11 unempty leaves with the above setup
   expect(unEmptyLeaves.length).toBe(7);
-  
+
   var allItems = leaf.getItems();
   // We should have 13 items in the tree
   expect(allItems.length).toBe(13);
 
   var subleaf_items = [];
   unEmptyLeaves.forEach(function (subleaf) {
-    
+
     // Every unempty leaf should have more than 1 item
     expect(subleaf.items.length).toBeGreaterThan(0);
 
@@ -394,20 +394,20 @@ describe('unEmptyLeaves.items length should match getItems.length', function () 
 describe('Adding items should return the item added', function () {
 
   var leaf = Leaf(props);
-  
+
   var item = leaf.addItem({ x: 0, y: 0, val: 'A' });
   expect(item.val).toBe('A');
   var item = leaf.addItem({ x: 1, y: 0, val: 'B' });
   expect(item.val).toBe('B');
   var item = leaf.addItem({ x: 1, y: 1, val: 'C' });
   expect(item.val).toBe('C');
-  
+
   var item = leaf.addItem({ x: 0, y: 1, val: 'D' });
   expect(item.val).toBe('D');
 
   var item = leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
   expect(item.val).toBe('E');
-  
+
   var item = leaf.addItem({ x: 0.126, y: 0.126, val: 'F' });
   expect(item.val).toBe('F');
   var item = leaf.addItem({ x: 0.127, y: 0.127, val: 'G' });
@@ -441,7 +441,7 @@ describe('Should have correct number of leaves after removing item', function ()
 
   // Adding this item causes a split resulting in 4 unempty leaves
   var lastAddeditem = leaf.addItem({ x: 0.125, y: 0.125, val: 'E' });
-  
+
   expect(leaf.getUnEmptyLeaves().length).toBe(4);
 
   // Removing the last added item should collapse the parent leaf, recalculating
@@ -457,9 +457,9 @@ describe('Should have correct number of leaves after removing item', function ()
 describe('Honestly havn\'t really thought this test through, lucky if it\s accurate', function () {
 
   var leaf = Leaf(props);
-  
+
   var item1 = leaf.addItem({ x: 0, y: 0, val: 'A' });
-  
+
   var item2 = leaf.addItem({ x: 1, y: 0, val: 'B' });
   leaf.addItem({ x: 1, y: 1, val: 'C' });
   leaf.addItem({ x: 0, y: 1, val: 'D' });

@@ -1,280 +1,235 @@
-var leafCount = 0
-  , itemCount = 0
-  ;
+let leafCount = 0
+let itemCount = 0
 
-function isInBounds (item, bounds) {
-  if (item.x >= bounds.left && 
-      item.x < bounds.right &&
-      item.y >= bounds.top &&
-      item.y < bounds.bottom) {
-  
-    return true;
-  }
+const isInBounds = (item, bounds) => {
+	if (item.x >= bounds.left &&
+	item.x < bounds.right &&
+	item.y >= bounds.top &&
+	item.y < bounds.bottom) {
+		return true
+	}
 
-  return false;
+	return false
 }
 
+const shuffle = (items, leaves) => {
+	items.forEach(subitem => {
+		leaves.forEach(subleaf => {
+			if (isInBounds(subitem, subleaf.bounds)) {
+				subleaf.addItem(subitem)
 
-function shuffle (items, leaves) {
-  items.forEach(function (subitem) {
-    leaves.forEach(function (subleaf) {
-      if (isInBounds(subitem, subleaf.bounds)) {
-        subleaf.addItem(subitem);
-        return false;
-      }
-    });
-  });
+				return false
+			}
+		})
+	})
 }
 
-// Not sure which performs better
-// function shuffle (items, leaves) {
-//   var subitem
-//     , subleaf
-//     , i = 0
-//     , l = items.length
-//     , j
-//     ;
+const place = (item, leaves) => {
+	let subleaf
 
-//   for (; i< l; i += 1) {
-//     subitem = items[i];
-//     j = 0;
-//     for (; j< 4; j += 1) {
-//       subleaf = leaves[j];
-//       if (isInBounds(subitem, subleaf.bounds)) {
-        
-//         subleaf.addItem(subitem);
-//         // return;
-//       }
-//     }
-//   }
-// }
+	for (let i = 0; i < 4; i += 1) {
+		subleaf = leaves[i]
 
-
-function place (item, leaves) {
-  var i=0
-    , subleaf
-    ;
-
-  for (; i< 4; i += 1) {
-    subleaf = leaves[i];
-    if (isInBounds(item, subleaf.bounds)) {
-      return subleaf.addItem(item);
-    }
-  }
+		if (isInBounds(item, subleaf.bounds)) {
+			return subleaf.addItem(item)
+		}
+	}
 }
 
+const validLeaf = props => {
+	if (props === undefined) {
+		return false
+	}
 
-function split (leaf) {
+	if (!props.bounds) {
+		return false
+	}
 
-  var midX = leaf.bounds.left + (leaf.bounds.right  - leaf.bounds.left) / 2;
-  var midY = leaf.bounds.top +  (leaf.bounds.bottom - leaf.bounds.top)  / 2;
+	if (Reflect.has(props, 'bounds')) {
+		if (!Reflect.has(props.bounds, 'top') ||
+			!Reflect.has(props.bounds, 'left') ||
+			!Reflect.has(props.bounds, 'bottom') ||
+			!Reflect.has(props.bounds, 'right')) {
+			return false
+		}
+	}
 
-  var subBoundsTopLeft = {
-    top: leaf.bounds.top,
-    left: leaf.bounds.left,
-    right: midX,
-    bottom: midY,
-  };
-
-  var subBoundsTopRight = {
-    top: leaf.bounds.top,
-    left: midX,
-    right: leaf.bounds.right,
-    bottom: midY,
-  };
-
-  var subBoundsBottomRight = {
-    top: midY,
-    left: midX,
-    right: leaf.bounds.right,
-    bottom: leaf.bounds.bottom,
-  };
-
-  var subBoundsBottomLeft = {
-    top: midY,
-    left: leaf.bounds.left,
-    right: midX,
-    bottom: leaf.bounds.bottom,
-  };
-
-  leaf.leaves.push(
-    Leaf({bounds: subBoundsTopLeft    , depth: leaf.depth, parent: leaf }),
-    Leaf({bounds: subBoundsTopRight   , depth: leaf.depth, parent: leaf }),
-    Leaf({bounds: subBoundsBottomRight, depth: leaf.depth, parent: leaf }),
-    Leaf({bounds: subBoundsBottomLeft , depth: leaf.depth, parent: leaf })
-  );
+	return true
 }
 
+const validItem = item => {
+	if (item === undefined) {
+		return false
+	}
 
-function isInvalidLeaf (props) {
-  if (typeof props == 'undefined') {
-    return true;
-  }
+	if ((typeof item).toString() === 'object') {
+		if (!Reflect.has(item, 'x') ||
+			!Reflect.has(item, 'y') ||
+			!Reflect.has(item, 'val')) {
+			return false
+		}
+	}
 
-  if (!props.bounds) {
-    return true;
-  }
-
-  if (props.hasOwnProperty('bounds')) {
-    
-    if (!props.bounds.hasOwnProperty('top')) {
-      return true;
-    }
-
-    if (!props.bounds.hasOwnProperty('left')) {
-      return true;
-    }
-
-    if (!props.bounds.hasOwnProperty('bottom')) {
-      return true;
-    }
-
-    if (!props.bounds.hasOwnProperty('right')) {
-      return true;
-    }
-  }
-
-  return false;
+	return true
 }
 
+const constructItem = (item, leaf) => {
+	itemCount += 1
 
-function isInvalidItem (item) {
-  if (!item) {
-    return true;
-  }
+	item.uid = itemCount
+	item.leaf = leaf
+	item.index = leaf.items.push(item) - 1
 
-  if (typeof item == 'object') {
-    
-    if (!item.hasOwnProperty('x')) {
-      return true;
-    }
+	item.remove = () => {
+		leaf.items.splice(leaf.index, 1)
+		leaf.parent.collapse()
+	}
 
-    if (!item.hasOwnProperty('y')) {
-      return true;
-    }
-
-    if (!item.hasOwnProperty('val')) {
-      return true;
-    }
-  }
-
-  return false;
+	return item
 }
 
+const constructLeaf = props => {
+	if (!validLeaf(props)) {
+		return undefined
+	}
 
+	leafCount += 1
 
+	const leaf = {
+		bounds: props.bounds,
+		depth: props.depth + 1 || 0,
+		uid: leafCount,
+		leaves: [],
+		items: [],
+		parent: props.parent || {root: true}
+	}
 
+	leaf.getItems = () => {
+		if (leaf.items.length > 0) {
+			return leaf.items
+		}
 
-Leaf = function (props, extensions) {
+		if (leaf.leaves.length > 0) {
+			return leaf.leaves[0].getItems()
+				.concat(
+					leaf.leaves[1].getItems(),
+					leaf.leaves[2].getItems(),
+					leaf.leaves[3].getItems())
+		}
 
-  if (isInvalidLeaf(props)) {
-    return undefined;
-  }
+		return []
+	}
 
-  leafCount += 1;
-  
-  return {
+	leaf.getUnEmptyLeaves = () => {
+		if (leaf.items.length > 0) {
+			return [leaf]
+		}
 
-    bounds: props.bounds,
-    depth: props.depth + 1 || 0,
-    
-    uid: leafCount,
-    leaves: [],
-    items: [],
-    parent: props.parent || {root: true},
+		if (leaf.leaves.length > 0) {
+			return leaf.leaves[0].getUnEmptyLeaves()
+				.concat(
+					leaf.leaves[1].getUnEmptyLeaves(),
+					leaf.leaves[2].getUnEmptyLeaves(),
+					leaf.leaves[3].getUnEmptyLeaves())
+		}
 
-    
-    getItems: function () {
-      if (this.items.length > 0) {
-        return this.items;
-      }
+		return []
+	}
 
-      if (this.leaves.length > 0) {
-        return this.leaves[0].getItems()
-          .concat(this.leaves[1].getItems())
-          .concat(this.leaves[2].getItems())
-          .concat(this.leaves[3].getItems());
-      }
+	leaf.addItem = item => {
+		if (!validItem(item)) {
+			return undefined
+		}
 
-      return [];
-    },
+		if (leaf.leaves.length > 0) {
+			return place(item, leaf.leaves)
+		}
 
-    getUnEmptyLeaves: function () {
-      if (this.items.length > 0) {
-        return [this];
-      }
+		if (leaf.items.length < 4) {
+			return constructItem(item, leaf)
+		}
 
-      if (this.leaves.length > 0) {
-        return this.leaves[0].getUnEmptyLeaves()
-          .concat(this.leaves[1].getUnEmptyLeaves())
-          .concat(this.leaves[2].getUnEmptyLeaves())
-          .concat(this.leaves[3].getUnEmptyLeaves());
-      }
+		if (leaf.items.length === 4) {
+			split(leaf)
+			shuffle(leaf.items, leaf.leaves)
 
-      return [];
-    },
+			leaf.items = []
+			return place(item, leaf.leaves)
+		}
+	}
 
-    addItem: function (item) {
-        
-      if (isInvalidItem(item)) {
-        return undefined;
-      }
+	leaf.collapse = () => {
+		const subitems = leaf.getItems()
+		leaf.leaves = []
 
-      if (this.leaves.length > 0) {
-        return place(item, this.leaves);
-      }
+		for (let i = 0, l = subitems.length; i < l; i++) {
+			leaf.addItem(subitems[i])
+		}
+	}
 
-      if (this.items.length < 4) {
-        return Item(item, this);
-      }
-
-      if (this.items.length === 4) {
-        split(this);
-        shuffle(this.items, this.leaves);
-        this.items = [];
-        return place(item, this.leaves);
-      }
-    },
-
-    collapse: function () {
-      
-      var subitems = this.getItems()
-        , l=subitems.length
-        , i=0
-        ;
-      
-      this.leaves = [];
-
-      for (; i< l; i++) {
-        this.addItem(subitems[i]);
-      }
-    },
-
-  };
-
+	return leaf
 }
 
+const split = leaf => {
+	const midX = leaf.bounds.left +
+		((leaf.bounds.right - leaf.bounds.left) / 2)
+	const midY = leaf.bounds.top +
+		((leaf.bounds.bottom - leaf.bounds.top) / 2)
 
+	const subBoundsTopLeft = {
+		top: leaf.bounds.top,
+		left: leaf.bounds.left,
+		right: midX,
+		bottom: midY
+	}
 
-function Item (item, leaf) {
-  itemCount += 1;
-  
-  item.uid = itemCount;
-  item.leaf = leaf;
-  item.index = leaf.items.push(item) - 1;
-  
-  item.remove = function () {
-    
-    this.leaf.items.splice(this.index, 1);
-    this.leaf.parent.collapse();
-  }
+	const subBoundsTopRight = {
+		top: leaf.bounds.top,
+		left: midX,
+		right: leaf.bounds.right,
+		bottom: midY
+	}
 
-  return item;
+	const subBoundsBottomRight = {
+		top: midY,
+		left: midX,
+		right: leaf.bounds.right,
+		bottom: leaf.bounds.bottom
+	}
+
+	const subBoundsBottomLeft = {
+		top: midY,
+		left: leaf.bounds.left,
+		right: midX,
+		bottom: leaf.bounds.bottom
+	}
+
+	leaf.leaves.push(
+		constructLeaf({
+			bounds: subBoundsTopLeft,
+			depth: leaf.depth, parent: leaf
+		}),
+
+		constructLeaf({
+			bounds: subBoundsTopRight,
+			depth: leaf.depth, parent: leaf
+		}),
+
+		constructLeaf({
+			bounds: subBoundsBottomRight,
+			depth: leaf.depth, parent: leaf
+		}),
+
+		constructLeaf({
+			bounds: subBoundsBottomLeft,
+			depth: leaf.depth, parent: leaf
+		})
+	)
 }
 
-
-
-// Only export if in Node env.
-if (typeof module !== 'undefined') {
-  module.exports = Leaf;
+// Constructor export depends on environment
+if (typeof module === 'undefined') {
+	window.Leaf = constructLeaf
+} else {
+	module.exports = constructLeaf
 }
