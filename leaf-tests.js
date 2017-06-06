@@ -28,14 +28,14 @@ var Leaf = require('./Leaf.js');
 
 describe('Leaf should require definition properties', function () {
 
-  var leaf = Leaf();
-  expect(typeof leaf).toBe('undefined');
+  var leaf = new Leaf();
+  expect(leaf.valid).toBe(false);
 
-  var leaf = Leaf({});
-  expect(typeof leaf).toBe('undefined');
+  var leaf = new Leaf({});
+  expect(leaf.valid).toBe(false);
 
-  var leaf = Leaf({ bounds: null });
-  expect(typeof leaf).toBe('undefined');
+  var leaf = new Leaf({ bounds: null });
+  expect(leaf.valid).toBe(false);
 
 });
 
@@ -43,7 +43,7 @@ describe('Leaf should require definition properties', function () {
 
 describe('Leaf should be undefined if no bounds dimensions are passed', function () {
 
-  var leaf = Leaf({
+  var leaf = new Leaf({
     bounds: {
       // top: 0,
       left: 0,
@@ -51,9 +51,9 @@ describe('Leaf should be undefined if no bounds dimensions are passed', function
       right: 1,
     }
   });
-  expect(typeof leaf).toBe('undefined');
+  expect(leaf.valid).toBe(false);
 
-  var leaf = Leaf({
+  var leaf = new Leaf({
     bounds: {
       top: 0,
       // left: 0,
@@ -61,9 +61,9 @@ describe('Leaf should be undefined if no bounds dimensions are passed', function
       right: 1,
     }
   });
-  expect(typeof leaf).toBe('undefined');
+  expect(leaf.valid).toBe(false);
 
-  var leaf = Leaf({
+  var leaf = new Leaf({
     bounds: {
       top: 0,
       left: 0,
@@ -71,10 +71,10 @@ describe('Leaf should be undefined if no bounds dimensions are passed', function
       right: 1,
     }
   });
-  expect(typeof leaf).toBe('undefined');
+  expect(leaf.valid).toBe(false);
 
 
-  var leaf = Leaf({
+  var leaf = new Leaf({
     bounds: {
       top: 0,
       left: 0,
@@ -82,7 +82,7 @@ describe('Leaf should be undefined if no bounds dimensions are passed', function
       // right: 1,
     }
   });
-  expect(typeof leaf).toBe('undefined');
+  expect(leaf.valid).toBe(false);
 
 });
 
@@ -90,7 +90,7 @@ describe('Leaf should be undefined if no bounds dimensions are passed', function
 
 describe('Leaf should instantiate if bounds have top, left, bottom, right dimensions', function () {
 
-  var leaf = Leaf({
+  var leaf = new Leaf({
     bounds: {
       top: 0,
       left: 0,
@@ -114,7 +114,7 @@ describe('Leaf should instantiate if bounds have top, left, bottom, right dimens
 
 
 describe('New leaf should have no items and no leaves', function () {
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   expect(leaf.items.length).toBe(0);
   expect(leaf.leaves.length).toBe(0);
 });
@@ -123,11 +123,11 @@ describe('New leaf should have no items and no leaves', function () {
 
 describe('Adding an item should fail x, y, val/objectReference', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   leaf.addItem({});
   expect(leaf.items.length).toBe(0);
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   leaf.addItem({
     // x: 0,
     y: 0,
@@ -135,7 +135,7 @@ describe('Adding an item should fail x, y, val/objectReference', function () {
   });
   expect(leaf.items.length).toBe(0);
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   leaf.addItem({
     x: 0,
     // y: 0,
@@ -143,7 +143,7 @@ describe('Adding an item should fail x, y, val/objectReference', function () {
   });
   expect(leaf.items.length).toBe(0);
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   leaf.addItem({
     x: 0,
     y: 0,
@@ -157,7 +157,7 @@ describe('Adding an item should fail x, y, val/objectReference', function () {
 
 describe('Leaf should have 1 item after adding first item', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   expect(leaf.items.length).toBe(1);
 
@@ -167,7 +167,7 @@ describe('Leaf should have 1 item after adding first item', function () {
 
 describe('Leaf should have 2 items after adding second item', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   leaf.addItem({ x: 1, y: 0, val: 'B' });
   expect(leaf.items.length).toBe(2);
@@ -178,7 +178,7 @@ describe('Leaf should have 2 items after adding second item', function () {
 
 describe('Leaf should have 3 items after adding third item', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   leaf.addItem({ x: 1, y: 0, val: 'B' });
   leaf.addItem({ x: 1, y: 1, val: 'C' });
@@ -190,7 +190,7 @@ describe('Leaf should have 3 items after adding third item', function () {
 
 describe('Leaf should have 4 items after adding forth item', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   leaf.addItem({ x: 1, y: 0, val: 'B' });
   leaf.addItem({ x: 1, y: 1, val: 'C' });
@@ -203,7 +203,7 @@ describe('Leaf should have 4 items after adding forth item', function () {
 
 describe('getItems should return 4 and 5 items respectively', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   // Add 4 items
   for (var i=0; i< 4; i++) {
@@ -234,7 +234,7 @@ describe('getItems should return 4 and 5 items respectively', function () {
 
 describe('Leaf should count 16,384 items after adding 16,384 items', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   for (var i=0; i< 16384; i++) {
     leaf.addItem({
@@ -253,7 +253,7 @@ describe('Leaf should count 16,384 items after adding 16,384 items', function ()
 
 describe('Item should have reference to leaf', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   leaf.addItem({ x: 0, y: 0, val: 'A' });
 
@@ -262,6 +262,7 @@ describe('Item should have reference to leaf', function () {
   expect(typeof item.leaf).toBe('object');
 
   // Should see it's own reflection
+  console.log(item)
   expect(item.leaf.items.length).toBe(1);
 
 });
@@ -269,7 +270,7 @@ describe('Item should have reference to leaf', function () {
 
 describe('Item\'s leaf reference should change when it\s leaf changes', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   leaf.addItem({ x: 1, y: 0, val: 'B' });
@@ -298,7 +299,7 @@ describe('Item\'s leaf reference should change when it\s leaf changes', function
 
 describe('getUnEmptyLeaves should return 4 leaves, each containing 1 item', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   leaf.addItem({ x: 1, y: 0, val: 'B' });
@@ -321,7 +322,7 @@ describe('getUnEmptyLeaves should return 4 leaves, each containing 1 item', func
 
 describe('getUnEmptyLeaves should return 4 leaves, each containing > 0 items', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   leaf.addItem({ x: 1, y: 0, val: 'B' });
@@ -346,7 +347,7 @@ describe('getUnEmptyLeaves should return 4 leaves, each containing > 0 items', f
 
 describe('unEmptyLeaves.items length should match getItems.length', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   leaf.addItem({ x: 1, y: 0, val: 'B' });
@@ -393,7 +394,7 @@ describe('unEmptyLeaves.items length should match getItems.length', function () 
 
 describe('Adding items should return the item added', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   var item = leaf.addItem({ x: 0, y: 0, val: 'A' });
   expect(item.val).toBe('A');
@@ -432,7 +433,7 @@ describe('Adding items should return the item added', function () {
 
 describe('Should have correct number of leaves after removing item', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   leaf.addItem({ x: 0, y: 0, val: 'A' });
   leaf.addItem({ x: 1, y: 0, val: 'B' });
@@ -456,7 +457,7 @@ describe('Should have correct number of leaves after removing item', function ()
 
 describe('Honestly havn\'t really thought this test through, lucky if it\s accurate', function () {
 
-  var leaf = Leaf(props);
+  var leaf = new Leaf(props);
 
   var item1 = leaf.addItem({ x: 0, y: 0, val: 'A' });
 

@@ -3,7 +3,25 @@
  *  - A Quad Tree implementation in ESNext
  *  - Alistair MacDonald (f1lt3r)
  *  - MIT License
- *  - http://f1lt3r.github.io/carlton-quadtree
+ *
+ *  Demos: http://f1lt3r.github.io/carlton-quadtree
+ *
+ *  Example:
+ *
+ *	 	const myLeaf = new Leaf({
+ *	 		bounds: {
+ *	 			top: 0,
+ *	 			right: 0,
+ *	 			bottom: 0,
+ *	 			left: 0
+ *	 		}
+ *	 	})
+ *
+ *	 	myLeaf.addItem({
+ *	 		x:0, y:0, val: 123
+ *	 	})
+ *
+ *	 	console.log(myLeaf.getItems())
  */
 
 let leafCount = 0
@@ -81,101 +99,106 @@ const validItem = item => {
 	return true
 }
 
-const constructItem = (item, leaf) => {
-	itemCount += 1
+class Item {
+	constructor(item, leaf) {
+		itemCount += 1
 
-	item.uid = itemCount
-	item.leaf = leaf
-	item.index = leaf.items.push(item) - 1
+		this.uid = itemCount
+		this.index = leaf.items.push(item) - 1
+		item.items = leaf.items
+		item.leaf = leaf
 
-	item.remove = () => {
-		leaf.items.splice(leaf.index, 1)
-		leaf.parent.collapse()
+		item.remove = () => {
+			leaf.items.splice(this.index, 1)
+			leaf.parent.collapse()
+		}
+
+		return item
 	}
-
-	return item
 }
 
-const constructLeaf = props => {
-	if (!validLeaf(props)) {
-		return undefined
-	}
+class Leaf {
+	constructor(props) {
+		this.valid = validLeaf(props)
 
-	leafCount += 1
-
-	const leaf = {
-		bounds: props.bounds,
-		depth: props.depth + 1 || 0,
-		uid: leafCount,
-		leaves: [],
-		items: [],
-		parent: props.parent || {root: true}
-	}
-
-	leaf.getItems = () => {
-		if (leaf.items.length > 0) {
-			return leaf.items
+		if (!this.valid) {
+			return
 		}
 
-		if (leaf.leaves.length > 0) {
-			return leaf.leaves[0].getItems()
+		leafCount += 1
+
+		this.bounds = props.bounds
+		this.depth = props.depth + 1 || 0
+		this.uid = leafCount
+		this.leaves = []
+		this.items = []
+		this.parent = props.parent || {root: true}
+	}
+
+	getItems() {
+		if (this.items.length > 0) {
+			return this.items
+		}
+
+		if (this.leaves.length > 0) {
+			return this.leaves[0].getItems()
 				.concat(
-					leaf.leaves[1].getItems(),
-					leaf.leaves[2].getItems(),
-					leaf.leaves[3].getItems())
+					this.leaves[1].getItems(),
+					this.leaves[2].getItems(),
+					this.leaves[3].getItems())
 		}
 
 		return []
 	}
 
-	leaf.getUnEmptyLeaves = () => {
-		if (leaf.items.length > 0) {
-			return [leaf]
+	getUnEmptyLeaves() {
+		if (this.items.length > 0) {
+			return [this]
 		}
 
-		if (leaf.leaves.length > 0) {
-			return leaf.leaves[0].getUnEmptyLeaves()
+		if (this.leaves.length > 0) {
+			return this.leaves[0].getUnEmptyLeaves()
 				.concat(
-					leaf.leaves[1].getUnEmptyLeaves(),
-					leaf.leaves[2].getUnEmptyLeaves(),
-					leaf.leaves[3].getUnEmptyLeaves())
+					this.leaves[1].getUnEmptyLeaves(),
+					this.leaves[2].getUnEmptyLeaves(),
+					this.leaves[3].getUnEmptyLeaves())
 		}
 
 		return []
 	}
 
-	leaf.addItem = item => {
+	addItem(item) {
 		if (!validItem(item)) {
-			return undefined
+			return {
+				valid: false
+			}
 		}
 
-		if (leaf.leaves.length > 0) {
-			return place(item, leaf.leaves)
+		if (this.leaves.length > 0) {
+			return place(item, this.leaves)
 		}
 
-		if (leaf.items.length < 4) {
-			return constructItem(item, leaf)
+		if (this.items.length < 4) {
+			return new Item(item, this)
 		}
 
-		if (leaf.items.length === 4) {
-			split(leaf)
-			shuffle(leaf.items, leaf.leaves)
+		if (this.items.length === 4) {
+			split(this)
+			shuffle(this.items, this.leaves)
 
-			leaf.items = []
-			return place(item, leaf.leaves)
+			this.items = []
+			return place(item, this.leaves)
 		}
 	}
 
-	leaf.collapse = () => {
-		const subitems = leaf.getItems()
-		leaf.leaves = []
+	collapse() {
+		const subitems = this.getItems()
+		this.leaves = []
 
 		for (let i = 0, l = subitems.length; i < l; i++) {
-			leaf.addItem(subitems[i])
+			this.addItem(subitems[i])
 		}
 	}
-
-	return leaf
 }
 
 const split = leaf => {
@@ -214,22 +237,22 @@ const split = leaf => {
 	}
 
 	leaf.leaves.push(
-		constructLeaf({
+		new Leaf({
 			bounds: subBoundsTopLeft,
 			depth: leaf.depth, parent: leaf
 		}),
 
-		constructLeaf({
+		new Leaf({
 			bounds: subBoundsTopRight,
 			depth: leaf.depth, parent: leaf
 		}),
 
-		constructLeaf({
+		new Leaf({
 			bounds: subBoundsBottomRight,
 			depth: leaf.depth, parent: leaf
 		}),
 
-		constructLeaf({
+		new Leaf({
 			bounds: subBoundsBottomLeft,
 			depth: leaf.depth, parent: leaf
 		})
@@ -238,7 +261,7 @@ const split = leaf => {
 
 // Constructor export depends on environment
 if (typeof module === 'undefined') {
-	window.Leaf = constructLeaf
+	window.Leaf = Leaf
 } else {
-	module.exports = constructLeaf
+	module.exports = Leaf
 }
