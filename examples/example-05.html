@@ -60,7 +60,7 @@ var leaf = Leaf(props);
 
 var mag = 0;
 for (var i=0; i< 444; i++) {
-  mag += .00112;  
+  mag += .00112;
   leaf.addItem({
     x: 0.5 + ((Math.sin(i/72.22))*mag),
     y: 0.5 + ((Math.cos(i/72.22))*mag),
@@ -75,12 +75,12 @@ for (var i=0; i< 444; i++) {
 
 }
 
-function isInBounds (item, bounds) {
-  if (item.x >= bounds.left && 
+function inBounds (item, bounds) {
+  if (item.x >= bounds.left &&
       item.x < bounds.right &&
       item.y >= bounds.top &&
       item.y < bounds.bottom) {
-  
+
     return true;
   }
 
@@ -95,30 +95,30 @@ c.lineWidth = 1;
 
 function drawleaves () {
   // var start = + new Date();
-  
+
   c.fillStyle="#000";
   c.fillRect(0,0,w,h);
 
   items.forEach(function (item) {
-    
+
     item.x += item.val.spx;
     item.y += item.val.spy;
 
     if (item.x < props.bounds.left) {
-     item.x = props.bounds.right - (props.bounds.left - item.x); 
+     item.x = props.bounds.right - (props.bounds.left - item.x);
     }
     if (item.x >= props.bounds.right) {
-     item.x = props.bounds.left - (props.bounds.right - item.x); 
+     item.x = props.bounds.left - (props.bounds.right - item.x);
     }
     if (item.y < props.bounds.top) {
-     item.y = props.bounds.bottom - (props.bounds.top - item.y); 
+     item.y = props.bounds.bottom - (props.bounds.top - item.y);
     }
     if (item.y >= props.bounds.bottom) {
-     item.y = props.bounds.top - (props.bounds.bottom - item.y); 
+     item.y = props.bounds.top - (props.bounds.bottom - item.y);
     }
-    
 
-    if (!isInBounds(item, item.leaf)) {
+
+    if (!inBounds(item, item.leaf)) {
       item.remove();
       leaf.addItem(item);
     }
@@ -134,5 +134,5 @@ function drawleaves () {
 
 var dli = setInterval(drawleaves, 30);
 
-  
+
 </script>

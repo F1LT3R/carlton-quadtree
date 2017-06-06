@@ -43,7 +43,7 @@ body{
 
 
 
-<!-- 
+<!--
 <canvas width="600" height="600" id="canvas" style="border:1px solid black"></canvas> -->
 
 <script>
@@ -72,7 +72,7 @@ function drawElem (item) {
     // return ((Math.sin((Math.PI*2)/1*item.x) + Math.cos((Math.PI*2)/1*item.y)     )*500);
     // return parseInt(20/(Math.sin() * item.x));
   }
-  
+
   function rx () {
     _rx+=0.001
     return _rx;
@@ -167,12 +167,12 @@ var props = {
 
 var leaf = Leaf(props);
 
-function isInBounds (item, bounds) {
-  if (item.x >= bounds.left && 
+function inBounds (item, bounds) {
+  if (item.x >= bounds.left &&
       item.x < bounds.right &&
       item.y >= bounds.top &&
       item.y < bounds.bottom) {
-  
+
     return true;
   }
 
@@ -192,31 +192,31 @@ function isInBounds (item, bounds) {
 
 function drawleaves () {
   // var start = + new Date();
-  
+
   // c.fillStyle="rgba(0,0,0,.1)";
   // c.fillStyle="rgba(0,0,0,1)";
   // c.fillRect(0, 0, w, h);
 
   items.forEach(function (item) {
-    
+
     item.x += item.val.spx;
     item.y += item.val.spy;
 
     if (item.x < props.bounds.left) {
-     item.x = props.bounds.right - (props.bounds.left - item.x); 
+     item.x = props.bounds.right - (props.bounds.left - item.x);
     }
     if (item.x >= props.bounds.right) {
-     item.x = props.bounds.left - (props.bounds.right - item.x); 
+     item.x = props.bounds.left - (props.bounds.right - item.x);
     }
     if (item.y < props.bounds.top) {
-     item.y = props.bounds.bottom - (props.bounds.top - item.y); 
+     item.y = props.bounds.bottom - (props.bounds.top - item.y);
     }
     if (item.y >= props.bounds.bottom) {
-     item.y = props.bounds.top - (props.bounds.bottom - item.y); 
+     item.y = props.bounds.top - (props.bounds.bottom - item.y);
     }
-    
 
-    if (!isInBounds(item, item.leaf)) {
+
+    if (!inBounds(item, item.leaf)) {
       item.remove();
       leaf.addItem(item);
     }
@@ -258,9 +258,9 @@ for (var i=0; i< 25; i++) {
       spy = -.001;
     }
     leaf.addItem({
-      x: 1/25 * i, // random from 0-1 
-      y: 1/25 * j, // random from 0-1 
-      // x: Math.random(), // random from 0-1 
+      x: 1/25 * i, // random from 0-1
+      y: 1/25 * j, // random from 0-1
+      // x: Math.random(), // random from 0-1
       // y: Math.random(), // random from 0-1
       // x:((Math.sin(i/2.22))*(mag)),
       // y:((Math.cos(i/2.22))*(mag)),
@@ -281,5 +281,5 @@ for (var i=0; i< 25; i++) {
 
 var items = leaf.getItems();
 
-  
+
 </script>

@@ -3,6 +3,7 @@
  *  - A Quad Tree implementation in ESNext
  *  - Alistair MacDonald (f1lt3r)
  *  - MIT License
+ *  - http://f1lt3r.github.io/carlton-quadtree
  */
 
 let leafCount = 0
