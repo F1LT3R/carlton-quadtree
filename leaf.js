@@ -3,9 +3,9 @@ let itemCount = 0
 
 const isInBounds = (item, bounds) => {
 	if (item.x >= bounds.left &&
-	item.x < bounds.right &&
-	item.y >= bounds.top &&
-	item.y < bounds.bottom) {
+		item.x < bounds.right &&
+		item.y >= bounds.top &&
+		item.y < bounds.bottom) {
 		return true
 	}
 
