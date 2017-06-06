@@ -1,3 +1,10 @@
+/**
+ * Carlton Quadtree
+ *  - A Quad Tree implementation in ESNext
+ *  - Alistair MacDonald (f1lt3r)
+ *  - MIT License
+ */
+
 let leafCount = 0
 let itemCount = 0
 
@@ -173,6 +180,7 @@ const constructLeaf = props => {
 const split = leaf => {
 	const midX = leaf.bounds.left +
 		((leaf.bounds.right - leaf.bounds.left) / 2)
+
 	const midY = leaf.bounds.top +
 		((leaf.bounds.bottom - leaf.bounds.top) / 2)
 
