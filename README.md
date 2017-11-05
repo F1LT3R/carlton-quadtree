@@ -1,6 +1,6 @@
 # Carlton Quadtree
 
-A Quad Tree implementation in ESNext.
+An infinitely divisible QuadTree implementation in ESNext.
 
 ![Carlton Dance](https://media0.giphy.com/media/aOL3fsoTtf5yU/giphy.gif)
 
